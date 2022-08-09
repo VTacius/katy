@@ -48,7 +48,9 @@ jobs:
       id: ubicacion
       run: |
         echo "::set-output name=fichero::$(find $PWD -name katy -mindepth 1)"
-    
+    - name: Empaquetando
+      run: |
+        tar -czvf katy-${{ github.ref }}.tgz basename $(find $PWD -name katy)
     - name: Subir los extra
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
@@ -56,5 +58,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.lanzamiento.outputs.upload_url }} 
-        asset_path: ${{ steps.ubicacion.outputs.fichero }}
+        asset_path: ./katy-${{ github.ref }}.tgz
         asset_name: katy-${{ github.ref }} 
