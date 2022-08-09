@@ -69,7 +69,8 @@ jobs:
         echo ${GITHUB_REF##*/}
         echo ${GITHUB_REPOSITORY##*/}
         echo $PWD
-        echo $GITHUB_ACTION_PATH
+        echo ${GITHUB_PATH}
+        echo ${GITHUB_ACTION_PATH}
         echo $(find $PWD -name katy)
         echo $(basename $(find $PWD -name katy))
         echo tar -czvf katy-${GITHUB_REF#refs/*/}.tgz $(basename $(find $PWD -name katy))
