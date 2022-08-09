@@ -68,9 +68,8 @@ jobs:
         echo ${{ steps.nombre_fichero.outputs.tag }}
         echo ${{ github.ref }}
         echo ${GITHUB_REF##*/}
-        echo ${GITHUB.REF##*/}
         echo ${{github.repository}}
-        echo ${GITHUB.REPOSITORY##*/}
+        echo ${GITHUB_REPOSITORY##*/}
     - name: Subir los extra
       id: upload-release-asset 
       uses: actions/upload-release-asset@v1
