@@ -38,15 +38,15 @@ jobs:
         go-version: 1.18
 
     - name: Test
-      run: go test -v ./...
+      run: go test -v 
     
     - name: Build
-      run: go build -v ./...
+      run: go build -v  
 
     - name: Ubicando paquetes
       id: ubicacion
       run: |
-        echo "::set-output name=fichero::$(find ./... -name katy -mindepth 1)"
+        echo "::set-output name=fichero::$(find $PWD -name katy -mindepth 1)"
     
     - name: Subir los extra
       id: upload-release-asset 
