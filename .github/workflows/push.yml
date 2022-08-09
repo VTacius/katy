@@ -67,7 +67,8 @@ jobs:
       run: | 
         echo ${{ steps.nombre_fichero.outputs.tag }}
         echo ${{ github.ref }}
-        echo ${ github.ref##*/ }
+        echo ${ GITHUB_REF##*/ }
+        echo ${ GITHUB.REF##*/ }
         echo ${{ github.repository }}
         echo ${ GITHUB.REPOSITORY##*/ }
     - name: Subir los extra
