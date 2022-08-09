@@ -47,40 +47,18 @@ jobs:
     - name: Corriendo test
       run: go test -v 
 
-    - name: Construyendo la aplicacion
-      run: go build -v  
-
     - name: Nombre de repositorio para nombre de aplicación
       id: nombre
       run: |
         echo "::set-output name=app::${GITHUB_REPOSITORY##*/}"
         echo "::set-output name=version::${GITHUB_REF##*/}"
-
-    - name: Ubicando paquetes
-      id: ubicacion
-      run: |
-        echo "::set-output name=fichero::$(find $PWD -name katy -mindepth 1)"
+    
+    - name: Construyendo la aplicacion
+      run: go build -v -o ${{steps.nombre.outputs.app}}
 
     - name: Empaquetando
       run: |
-        tar -czvf katy-${GITHUB_REF#refs/*/}.tgz $(basename $(find $PWD -name katy))
-
-    - name: Nombre del fichero
-      id: nombre_fichero
-      run: |
-        echo "::set-output name=tag::${GITHUB_REF#refs/*/}"
-
-    - name: Ver nombre del fichero
-      run: | 
-        echo ${GITHUB_REF##*/}
-        echo ${GITHUB_REPOSITORY##*/}
-        echo $PWD
-        echo ${GITHUB_PATH}
-        echo ${GITHUB_ACTION_PATH}
-        echo $(find $PWD -name katy)
-        echo $(basename $(find $PWD -name katy))
-        echo tar -czvf katy-${GITHUB_REF#refs/*/}.tgz $(basename $(find $PWD -name katy))
-        echo tar -czvf ${{steps.nombre.outputs.app}}-${{steps.nombre.outputs.version}}.tgz ${PWD}${{steps.nombre.outputs.app}}
+        tar -czvf ${{steps.nombre.outputs.app}}-${{steps.nombre.outputs.version}}.tgz ${{steps.nombre.outputs.app}}
 
     - name: Subir los extra
       id: upload-release-asset 
@@ -89,6 +67,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ needs.lanzamiento.outputs.upload_url }} 
-        asset_path: ./katy-${{ steps.nombre_fichero.outputs.tag }}.tgz
-        asset_name: katy-${{ steps.nombre_fichero.outputs.tag }}.tgz
+        asset_path: ./${{steps.nombre.outputs.app}}-${{steps.nombre.outputs.version}}.tgz
+        asset_name: ${{steps.nombre.outputs.app}}-${{steps.nombre.outputs.version}}.tgz
         asset_content_type: application/gzip
