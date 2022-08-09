@@ -46,7 +46,7 @@ jobs:
     - name: Ubicando paquetes
       id: ubicacion
       run: |
-        echo "::set-output name=fichero::$(find dist/ -mindepth 1)"
+        echo "::set-output name=fichero::$(find ./... -name katy -mindepth 1)"
     
     - name: Subir los extra
       id: upload-release-asset 
