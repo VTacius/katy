@@ -57,3 +57,4 @@ jobs:
       with:
         upload_url: ${{ needs.lanzamiento.outputs.upload_url }} 
         asset_path: ${{ steps.ubicacion.outputs.fichero }}
+        asset_name: katy-${{ github.ref }} 
