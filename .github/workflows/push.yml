@@ -50,6 +50,12 @@ jobs:
     - name: Construyendo la aplicacion
       run: go build -v  
 
+    - name: Nombre de repositorio para nombre de aplicación
+      id: nombre
+      run: |
+        echo "::set-output name=app::${GITHUB_REPOSITORY##*/}"
+        echo "::set-output name=version::${GITHUB_REF##*/}"
+
     - name: Ubicando paquetes
       id: ubicacion
       run: |
@@ -74,6 +80,7 @@ jobs:
         echo $(find $PWD -name katy)
         echo $(basename $(find $PWD -name katy))
         echo tar -czvf katy-${GITHUB_REF#refs/*/}.tgz $(basename $(find $PWD -name katy))
+        echo tar -czvf ${{steps.nombre.outputs.app}}-${{steps.nombre.outputs.version}}.tgz ${PWD}${{steps.nombre.outputs.app}}
 
     - name: Subir los extra
       id: upload-release-asset 
