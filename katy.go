@@ -62,7 +62,6 @@ func enviarPeticion(token string, chat_id string, contenido string) (int, error)
     respuesta, err := http.Post(endpoint, "application/json", bytes.NewBuffer(mensaje))
     
     if err != nil {
-        fmt.Println(err)
         return 500, errors.New(fmt.Sprintf("%s", err))
     }
     
@@ -73,34 +72,9 @@ func enviarPeticion(token string, chat_id string, contenido string) (int, error)
     return respuesta.StatusCode, nil
 }
 
-func enviarAlertaDisco(token string, chat_id string) func(*gin.Context) {
-    return func (c *gin.Context) {
-        // TODO: Cuando existan tipos génericos
-        var newAlerta AlertaDisco
-
-        if err := c.BindJSON(&newAlerta); err != nil {
-            c.IndentedJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
-            return 
-        }
-
-        contenidoAlerta := fmt.Sprintf("%s", newAlerta)
-        codigo, err := enviarPeticion(token, chat_id, contenidoAlerta)
-        
-        if err != nil {
-            c.IndentedJSON(codigo, gin.H{"error": fmt.Sprintf("%s", err)})
-            return
-        }  
-        
-        c.IndentedJSON(http.StatusCreated, newAlerta)
-    }
-}
-
 // TODO: Copiar y pegar, para que al menos funcione. Refactorizar para después
-func enviarAlertaBase(token string, chat_id string) func(*gin.Context) {
+func enviarAlerta[alertaTipo any](token string, chat_id string, newAlerta alertaTipo) func(*gin.Context) {
     return func (c *gin.Context) {
-        // TODO: Cuando existan tipos génericos
-        var newAlerta AlertaBase
-
         if err := c.BindJSON(&newAlerta); err != nil {
             c.IndentedJSON(500, gin.H{"error": fmt.Sprintf("%s", err)})
             return 
@@ -124,8 +98,10 @@ func main() {
     KATY_PROXY_IP := os.Getenv("KATY_PROXY_IP")
     KATY_SOCKET := os.Getenv("KATY_SOCKET")
     
-    newEnviarAlertaDisco := enviarAlertaDisco(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)
-    newEnviarAlertaBase := enviarAlertaBase(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID)
+    var newAlertaDisco AlertaDisco
+    newEnviarAlertaDisco := enviarAlerta(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, newAlertaDisco)
+    var newAlertaBase AlertaBase
+    newEnviarAlertaBase := enviarAlerta(TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, newAlertaBase)
     
     router := gin.Default()
     router.SetTrustedProxies([]string{KATY_PROXY_IP})
