@@ -4,38 +4,40 @@ import (
     "fmt"
 )
 
-type AlertaBase struct {
-    CheckName string `json:"_check_name"`
-    Level string `json:"_level"`
-    Host string `json:"host"`
-}
 
-
-func (alerta AlertaBase) String() string{
+func FormatearAlertaBase(alerta map[string]any) string{
     return fmt.Sprintf(`
 Nombre: %s
 Nivel: %s
 Hostname: %s
-    `, alerta.CheckName, alerta.Level, alerta.Host) 
+    `, alerta["_check_name"], alerta["_level"], alerta["host"]) 
 }
 
-
-type AlertaDisco struct {
-    CheckName string `json:"_check_name"`
-    Level string `json:"_level"`
-    Host string `json:"host"`
-    Path string `json:"path"`
-    UsedPercent string `json:"used_percent"`
-}
-
-
-func (alerta AlertaDisco) String() string{
+func FormatearAlertaDisco(alerta map[string]any) string{
     return fmt.Sprintf(`
 Nombre: %s
 Nivel: %s
 Hostname: %s
 
 Particion: %s    -    Uso: %s
-`, alerta.CheckName, alerta.Level, alerta.Host, alerta.Path, alerta.UsedPercent) 
+`, alerta["_check_name"], alerta["_level"], alerta["host"], alerta["path"], alerta["used_percent"]) 
 }
 
+func FormatearAlertaTemperatura(alerta map[string]any) string {
+    temperatura, existe := alerta["temp1"]
+    if !existe {
+        temperatura = alerta["temp2"]
+    }
+    return fmt.Sprintf(`
+Nombre: %s
+Nivel: %s
+Hostname: %s
+
+Temperatura: %.2f 
+`, alerta["_check_name"], alerta["_level"], alerta["host"], temperatura) 
+}
+
+var Formateadores = map[string]func(map[string]any) string{
+    "Temperatura": FormatearAlertaTemperatura,
+    "Disco": FormatearAlertaDisco,
+}

@@ -1,8 +1,9 @@
 {
-    "_check_name": "Disco",
+    "_check_name": "Temperatura alta",
     "_level": "Crit",
     "host": "xibalba",
     "parametro": "/var",
     "path": "/var",
+    "temp2": 38.2,
     "used_percent": "38%"
 }
