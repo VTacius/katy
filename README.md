@@ -8,24 +8,55 @@ El truco esta en usar una contenedor igual al sistema destino (**Debian Bullseye
 podman run  -it  --rm -v "$PWD":/go/src/myapp -w /go/src/myapp golang:1.18-bullseye go build .
 ```
 
+Comando que, como ya es sabido, es totalmente compatible con docker
+```bash
+docker run  -it  --rm -v "$PWD":/go/src/myapp -w /go/src/myapp golang:1.18-bullseye go build .
+```
+
 ## Instalación
 El binario se envía al servidor destino. SCP bastaría
+```bash
 scp gaby root@servidor:/usr/local/sbin
-
+```
 
 ## Configuración
 ```bash
+cat <<MAFI >/etc/default/katy
 export GIN_MODE=release
 export TELEGRAM_BOT_TOKEN="bot123:ABDCEFGHIJQLMNOPQRT"
 export TELEGRAM_CHAT_ID="-576489013"
 export KATY_PROXY_IP="127.0.0.1"
 export KATY_SOCKET="127.0.0.1:8080"
+MAFI
+```
+
+Configuramos el servicio
+```bash
+cat <<MAFI> /lib/systemd/system/katy.service 
+[Unit]
+Description=Gaby, que toma los mensajes y los reenvia a todo mundo
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/katy
+EnvironmentFile=/etc/default/katy
+
+[Install]
+WantedBy=multi-user.target
+MAFI
+```
+
+# Activamos e iniciamos el servicio por primera vez
+```bash
+systemctl enable --now katy.service
 ```
 
 ## Prueba inicial
 ```bash
-localhost:8080/alertas -H 'Content-Type: application/json' -d @contenido.json
+curl localhost:8080/alertas -H 'Content-Type: application/json' -d @contenido.json
 ```
+
 El contenido de json podría ser el siguiente
 ```json
 {
