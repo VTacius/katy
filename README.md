@@ -3,6 +3,7 @@ Recibe alertas de InfluxDB y las envia a Telegram
 
 ## Construcción
 La construcción del binario debe hacerse en un sistema independiente al servidor en producción. Un servidor en producción no debería tener herramientas para compilación de paquetes.
+
 El truco esta en usar una contenedor igual al sistema destino (**Debian Bullseye**) y con la misma versión de Golang (**1.18**), de allí el nombre de la imagen usada **golang:1.18-bullseye**
 ```bash
 podman run  -it  --rm -v "$PWD":/go/src/myapp -w /go/src/myapp golang:1.18-bullseye go build .
@@ -21,17 +22,21 @@ scp gaby root@servidor:/usr/local/sbin
 
 ## Configuración
 ```bash
-cat <<MAFI >/etc/default/katy
-export GIN_MODE=release
-export TELEGRAM_BOT_TOKEN="bot123:ABDCEFGHIJQLMNOPQRT"
-export TELEGRAM_CHAT_ID="-576489013"
-export KATY_PROXY_IP="127.0.0.1"
-export KATY_SOCKET="127.0.0.1:8080"
-MAFI
-```
+# Creamos el directorio para la aplicación
+mkdir /var/lib/katy/
+scp -r plantillas/ root@servidor:/var/lib/katy/
 
-Configuramos el servicio
-```bash
+# Creamos el fichero de configuración
+cat <<MAFI >/etc/default/katy
+GIN_MODE=release
+TELEGRAM_BOT_TOKEN="bot123:ABDCEFGHIJQLMNOPQRT"
+TELEGRAM_CHAT_ID="-576489013"
+KATY_PROXY_IP="127.0.0.1"
+KATY_SOCKET="127.0.0.1:8080"
+KATY_PLANTILLAS="/var/lib/katy/plantillas"
+MAFI
+
+# Configuramos el servicio
 cat <<MAFI> /lib/systemd/system/katy.service 
 [Unit]
 Description=Gaby, que toma los mensajes y los reenvia a todo mundo
