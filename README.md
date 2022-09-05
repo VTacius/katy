@@ -50,10 +50,8 @@ EnvironmentFile=/etc/default/katy
 [Install]
 WantedBy=multi-user.target
 MAFI
-```
 
 # Activamos e iniciamos el servicio por primera vez
-```bash
 systemctl enable --now katy.service
 ```
 
@@ -74,3 +72,6 @@ El contenido de json podría ser el siguiente
     "used_percent": "38%"
 }
 ```
+
+## El sistema de plantillas
+En `/var/lib/katy/plantilas/` se crea una plantila con el nombre de la alerta en específico
