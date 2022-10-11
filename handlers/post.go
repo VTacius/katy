@@ -58,7 +58,6 @@ func RecibirAlerta(plantilla *template.Template, token string, chat_id string) f
 		json.Unmarshal(datos, &contenido)
 
 		contenidoAlerta, indice, err := ejecutarTemplate(plantilla, contenido)
-		fmt.Println(contenidoAlerta)
 		if err != nil {
 			c.IndentedJSON(500, gin.H{"error plantilla:> ": fmt.Sprintf("%v", err)})
 			return

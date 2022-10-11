@@ -1,3 +1,8 @@
+#!/bin/bash
+
+TOKEN=${1:-bot123:ABDCEFGHIJQLMNOPQRT}
+CHAT=${2:-"-576489013"}
+
 # Creamos el directorio para la aplicación
 [ -d /var/lib/katy/ ] || mkdir /var/lib/katy/
 cp -r plantillas/ /var/lib/katy/
@@ -8,8 +13,8 @@ cp katy /usr/local/sbin
 # Creamos el fichero de configuración
 cat <<MAFI >/etc/default/katy
 GIN_MODE=release
-TELEGRAM_BOT_TOKEN="bot123:ABDCEFGHIJQLMNOPQRT"
-TELEGRAM_CHAT_ID="-576489013"
+TELEGRAM_BOT_TOKEN="${TOKEN}"
+TELEGRAM_CHAT_ID="${CHAT}"
 KATY_PROXY_IP="127.0.0.1"
 KATY_SOCKET="127.0.0.1:8080"
 KATY_PLANTILLAS="/var/lib/katy/plantillas"
