@@ -31,12 +31,12 @@ func ejecutarTemplate(plantilla *template.Template, contenido map[string]any) (s
 	indice := contenido["_check_name"]
 	nombrePlantilla := fmt.Sprintf("%s.tpl", indice)
 
-	plantilla = plantilla.Lookup(nombrePlantilla)
-	if plantilla == nil {
-		plantilla = plantilla.Lookup(nombrePlantilla)
+	var template = plantilla.Lookup(nombrePlantilla)
+	if template == nil {
+		template = plantilla.Lookup("default.tpl")
 	}
 
-	err := plantilla.Execute(&destino, contenido)
+	err := template.Execute(&destino, contenido)
 	if err != nil {
 		return "", "", err
 	}
@@ -58,6 +58,7 @@ func RecibirAlerta(plantilla *template.Template, token string, chat_id string) f
 		json.Unmarshal(datos, &contenido)
 
 		contenidoAlerta, indice, err := ejecutarTemplate(plantilla, contenido)
+		fmt.Println(contenidoAlerta)
 		if err != nil {
 			c.IndentedJSON(500, gin.H{"error plantilla:> ": fmt.Sprintf("%v", err)})
 			return
@@ -65,8 +66,8 @@ func RecibirAlerta(plantilla *template.Template, token string, chat_id string) f
 
 		codigo, err := telegram.EnviarPeticion(token, chat_id, contenidoAlerta)
 		if err != nil {
-			fmt.Println(codigo)
-			c.IndentedJSON(codigo, gin.H{"error envio:> ": fmt.Sprintf("%v", err)})
+			fmt.Printf("Error %d al enviar mensaje: %s\n", codigo, err.Error())
+			c.IndentedJSON(codigo, gin.H{"envio": err.Error()})
 			return
 		}
 

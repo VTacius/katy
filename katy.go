@@ -18,7 +18,7 @@ func init() {
 	}
 	contenido, err := template.ParseGlob(fmt.Sprintf("%s/*.tpl", directorioPlantillas))
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error con las plantillas: %w", err)
 		os.Exit(1)
 	}
 	plantilla = template.Must(contenido, err)
